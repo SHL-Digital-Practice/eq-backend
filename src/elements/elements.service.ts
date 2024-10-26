@@ -4,6 +4,8 @@ import { UpdateElementDto } from './dto/update-element.dto';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '../database/schema';
 import { elements } from '../database/schema';
+import { eq, inArray } from 'drizzle-orm';
+import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 
 @Injectable()
 export class ElementsService {
@@ -26,11 +28,25 @@ export class ElementsService {
     return `This action returns a #${id} element`;
   }
 
-  update(id: number, updateElementDto: UpdateElementDto) {
-    return `This action updates a #${id} element`;
+  async update(id: number, updateElementDto: UpdateElementDto) {
+    return await this.db
+      .update(elements)
+      .set(updateElementDto)
+      .where(eq(elements.id, id));
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} element`;
+  async updateBulk(sessionId: string, inputs: UpdateElementBulkDto[]) {
+    // risky business
+    await this.db
+      .insert(elements)
+      .values(inputs.map((d) => ({ sessionId, type: 'default', ...d })));
+  }
+
+  async remove(id: number) {
+    return await this.db.delete(elements).where(eq(elements.id, id));
+  }
+
+  async removeBulk(ids: number[]) {
+    return await this.db.delete(elements).where(inArray(elements.id, ids));
   }
 }

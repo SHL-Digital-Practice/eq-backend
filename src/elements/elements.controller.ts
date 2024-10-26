@@ -11,6 +11,7 @@ import {
 import { ElementsService } from './elements.service';
 import { CreateElementDto } from './dto/create-element.dto';
 import { UpdateElementDto } from './dto/update-element.dto';
+import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 
 @Controller('elements')
 export class ElementsController {
@@ -33,22 +34,38 @@ export class ElementsController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.elementsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.elementsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateElementDto: UpdateElementDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateElementDto: UpdateElementDto,
+  ) {
     return this.elementsService.update(+id, updateElementDto);
   }
 
+  @Patch('bulk')
+  async updateBulk(
+    @Query('sessionId') sessionId: string,
+    @Body() updateElementDto: UpdateElementBulkDto[],
+  ) {
+    return this.elementsService.updateBulk(sessionId, updateElementDto);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.elementsService.remove(+id);
+  }
+
+  @Delete('bulk')
+  async removeBulk(@Body() ids: number[]) {
+    return this.elementsService.removeBulk(ids);
   }
 }
