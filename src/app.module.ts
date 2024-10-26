@@ -5,6 +5,7 @@ import { ElementsModule } from './elements/elements.module';
 import { DrizzlePostgresModule } from '@knaadh/nestjs-drizzle-postgres';
 import * as schema from './database/schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
