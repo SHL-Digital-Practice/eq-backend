@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ElementsService } from './elements.service';
 import { CreateElementDto } from './dto/create-element.dto';
@@ -16,8 +17,12 @@ export class ElementsController {
   constructor(private readonly elementsService: ElementsService) {}
 
   @Post()
-  create(@Body() createElementDto: CreateElementDto) {
-    return this.elementsService.create(createElementDto);
+  create(
+    @Query('sessionId') sessionId: string,
+    @Body() createElementDto: CreateElementDto,
+  ) {
+    console.log('sessionId', sessionId);
+    return this.elementsService.create(sessionId, [createElementDto]);
   }
 
   @Get()

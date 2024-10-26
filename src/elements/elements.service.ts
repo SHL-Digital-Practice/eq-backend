@@ -8,8 +8,14 @@ import { elements } from '../database/schema';
 @Injectable()
 export class ElementsService {
   constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
-  async create(createElementDto: CreateElementDto) {
-    return await this.db.insert(elements).values({ name: 'test' });
+  async create(sessionId: string, data: CreateElementDto[]) {
+    return await this.db.insert(elements).values(
+      data.map((d) => ({
+        sessionId,
+        applicationId: d.applicationId,
+        type: 'default',
+      })),
+    );
   }
 
   findAll() {
