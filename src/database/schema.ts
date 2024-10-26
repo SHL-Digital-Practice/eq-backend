@@ -6,13 +6,32 @@ import {
   varchar,
   text,
   integer,
+  json,
 } from 'drizzle-orm/pg-core';
+
+export const sessions = pgTable('sessions', {
+  id: serial('id').primaryKey(),
+  ownerId: integer('owner_id').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+export const sessionsRelations = relations(sessions, ({ one, many }) => ({
+  owner: one(users, {
+    fields: [sessions.ownerId],
+    references: [users.id],
+  }),
+  elements: many(elements),
+}));
 
 export const elements = pgTable('elements', {
   id: serial('id').primaryKey(),
   type: varchar('type', { length: 256 }).notNull(),
-  sessionId: integer('session_id').notNull(),
+  sessionId: integer('session_id'),
   applicationId: varchar('application_id', { length: 256 }),
+  properties: json('properties')
+    .$type<Record<string, any>>()
+    .default({})
+    .notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -22,21 +41,6 @@ export const elementsRelations = relations(elements, ({ one }) => ({
     fields: [elements.sessionId],
     references: [sessions.id],
   }),
-}));
-
-export const sessions = pgTable('sessions', {
-  id: serial('id').primaryKey(),
-  ownerId: integer('owner_id').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-
-export const sessionsRelations = relations(sessions, ({ one, many }) => ({
-  owner: one(users, {
-    fields: [sessions.ownerId],
-    references: [users.id],
-  }),
-  elements: many(elements),
 }));
 
 export const users = pgTable('users', {

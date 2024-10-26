@@ -1,0 +1,1 @@
+- add properties column to elements
