@@ -21,8 +21,15 @@ export class ElementsController {
     @Query('sessionId') sessionId: string,
     @Body() createElementDto: CreateElementDto,
   ) {
-    console.log('sessionId', sessionId);
     return this.elementsService.create(sessionId, [createElementDto]);
+  }
+
+  @Post('bulk')
+  createBulk(
+    @Query('sessionId') sessionId: string,
+    @Body() createElementDto: CreateElementDto[],
+  ) {
+    return this.elementsService.create(sessionId, createElementDto);
   }
 
   @Get()
