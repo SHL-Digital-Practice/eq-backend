@@ -10,7 +10,7 @@ import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 @Injectable()
 export class ElementsService {
   constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
-  async create(sessionId: string, data: CreateElementDto[]) {
+  async create(sessionId: number, data: CreateElementDto[]) {
     return await this.db.insert(elements).values(
       data.map((d) => ({
         sessionId,
@@ -35,7 +35,7 @@ export class ElementsService {
       .where(eq(elements.id, id));
   }
 
-  async updateBulk(sessionId: string, inputs: UpdateElementBulkDto[]) {
+  async updateBulk(sessionId: number, inputs: UpdateElementBulkDto[]) {
     // risky business
     await this.db
       .insert(elements)

@@ -22,7 +22,7 @@ export class ElementsController {
     @Query('sessionId') sessionId: string,
     @Body() createElementDto: CreateElementDto,
   ) {
-    return this.elementsService.create(sessionId, [createElementDto]);
+    return this.elementsService.create(+sessionId, [createElementDto]);
   }
 
   @Post('bulk')
@@ -30,7 +30,7 @@ export class ElementsController {
     @Query('sessionId') sessionId: string,
     @Body() createElementDto: CreateElementDto[],
   ) {
-    return this.elementsService.create(sessionId, createElementDto);
+    return this.elementsService.create(+sessionId, createElementDto);
   }
 
   @Get()
@@ -56,7 +56,7 @@ export class ElementsController {
     @Query('sessionId') sessionId: string,
     @Body() updateElementDto: UpdateElementBulkDto[],
   ) {
-    return this.elementsService.updateBulk(sessionId, updateElementDto);
+    return this.elementsService.updateBulk(+sessionId, updateElementDto);
   }
 
   @Delete(':id')

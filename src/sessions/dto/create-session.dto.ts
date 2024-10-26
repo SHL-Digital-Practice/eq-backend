@@ -1,1 +1,3 @@
-export class CreateSessionDto {}
+export class CreateSessionDto {
+  ownerId: number;
+}
