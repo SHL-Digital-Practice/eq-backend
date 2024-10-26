@@ -42,10 +42,6 @@ export class ElementsService {
       .values(inputs.map((d) => ({ sessionId, type: 'default', ...d })));
   }
 
-  async remove(id: number) {
-    return await this.db.delete(elements).where(eq(elements.id, id));
-  }
-
   async removeBulk(ids: number[]) {
     return await this.db.delete(elements).where(inArray(elements.id, ids));
   }

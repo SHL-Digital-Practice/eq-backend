@@ -59,11 +59,6 @@ export class ElementsController {
     return this.elementsService.updateBulk(+sessionId, updateElementDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.elementsService.remove(+id);
-  }
-
   @Delete('bulk')
   async removeBulk(@Body() ids: number[]) {
     return this.elementsService.removeBulk(ids);
