@@ -11,7 +11,10 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 export class SessionsService {
   constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
   async create(createSessionDto: CreateSessionDto) {
-    return await this.db.insert(sessions).values(createSessionDto);
+    return await this.db.insert(sessions).values(createSessionDto).returning({
+      id: sessions.id,
+      ownerId: sessions.ownerId,
+    });
   }
 
   findAll() {

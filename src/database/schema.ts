@@ -7,6 +7,7 @@ import {
   text,
   integer,
   json,
+  boolean,
 } from 'drizzle-orm/pg-core';
 
 export const sessions = pgTable('sessions', {
@@ -28,6 +29,7 @@ export const elements = pgTable('elements', {
   type: varchar('type', { length: 256 }).notNull(),
   sessionId: integer('session_id'),
   applicationId: varchar('application_id', { length: 256 }),
+  saved: boolean('saved').notNull().default(false),
   properties: json('properties')
     .$type<Record<string, any>>()
     .default({})

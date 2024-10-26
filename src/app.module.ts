@@ -18,7 +18,7 @@ import { SessionsModule } from './sessions/sessions.module';
           postgres: {
             url: configService.getOrThrow<string>('DATABASE_URL'),
           },
-          config: { schema: { ...schema } },
+          config: { schema: { ...schema }, logger: true },
         };
       },
       imports: [ConfigModule],
