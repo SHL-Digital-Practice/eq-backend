@@ -1,0 +1,11 @@
+services:
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: eq-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: notsecure
+    ports:
+      - '5432:5432'
+    volumes:
+      - .data:/var/lib/postgresql/data

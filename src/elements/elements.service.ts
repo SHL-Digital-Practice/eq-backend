@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateElementDto } from './dto/create-element.dto';
 import { UpdateElementDto } from './dto/update-element.dto';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import * as schema from '../database/schema';
+import { elements } from '../database/schema';
 
 @Injectable()
 export class ElementsService {
-  create(createElementDto: CreateElementDto) {
-    return 'This action adds a new element';
+  constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
+  async create(createElementDto: CreateElementDto) {
+    return await this.db.insert(elements).values({ name: 'test' });
   }
 
   findAll() {

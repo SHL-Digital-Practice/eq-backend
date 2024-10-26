@@ -1,1 +1,4 @@
-export class CreateElementDto {}
+export class CreateElementDto {
+  applicationId: string;
+  properties: Record<string, any>;
+}
