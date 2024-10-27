@@ -61,4 +61,24 @@ export class SessionsService {
   remove(id: number) {
     return `This action removes a #${id} session`;
   }
+
+  async isSessionOpen(id: number) {
+    const result = await this.db
+      .select({
+        saved: sessions.saved,
+      })
+      .from(sessions)
+      .where(eq(sessions.id, id))
+      .limit(1);
+
+    if (result.length === 0) {
+      throw new NotFoundException('Session not found.');
+    }
+
+    const session = result[0];
+
+    if (session.saved) return false;
+
+    return true;
+  }
 }

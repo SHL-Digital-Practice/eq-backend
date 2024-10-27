@@ -1,16 +1,24 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateElementDto } from './dto/create-element.dto';
-import { UpdateElementDto } from './dto/update-element.dto';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '../database/schema';
 import { elements } from '../database/schema';
 import { and, eq, inArray } from 'drizzle-orm';
 import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
+import { SessionsService } from 'src/sessions/sessions.service';
 
 @Injectable()
 export class ElementsService {
-  constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
+  constructor(
+    @Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>,
+    private readonly sessionsService: SessionsService,
+  ) {}
   async create(sessionId: number, data: CreateElementDto[]) {
+    const isSessionOpen = await this.sessionsService.isSessionOpen(sessionId);
+    if (!isSessionOpen) {
+      throw new BadRequestException('Session is closed');
+    }
+
     type InsertUser = typeof elements.$inferInsert;
     const dataMapped: InsertUser[] = data.map((d) => ({
       sessionId,
@@ -29,14 +37,12 @@ export class ElementsService {
     return `This action returns a #${id} element`;
   }
 
-  async update(id: number, updateElementDto: UpdateElementDto) {
-    return await this.db
-      .update(elements)
-      .set(updateElementDto)
-      .where(eq(elements.id, id));
-  }
-
   async updateBulk(sessionId: number, inputs: UpdateElementBulkDto[]) {
+    const isSessionOpen = await this.sessionsService.isSessionOpen(sessionId);
+    if (!isSessionOpen) {
+      throw new BadRequestException('Session is closed');
+    }
+
     // risky business
     console.log('sessionId', sessionId);
     for (const input of inputs) {
@@ -56,7 +62,12 @@ export class ElementsService {
     }
   }
 
-  async removeBulk(ids: string[]) {
+  async removeBulk(sessionId: number, ids: string[]) {
+    const isSessionOpen = await this.sessionsService.isSessionOpen(sessionId);
+    if (!isSessionOpen) {
+      throw new BadRequestException('Session is closed');
+    }
+
     return await this.db
       .delete(elements)
       .where(inArray(elements.applicationId, ids));

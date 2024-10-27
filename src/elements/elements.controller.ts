@@ -24,11 +24,6 @@ export class ElementsController {
     return this.elementsService.create(+sessionId, createElementDto);
   }
 
-  @Get()
-  async findAll() {
-    return this.elementsService.findAll();
-  }
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.elementsService.findOne(+id);
@@ -43,7 +38,10 @@ export class ElementsController {
   }
 
   @Delete()
-  async removeBulk(@Body() ids: string[]) {
-    return this.elementsService.removeBulk(ids);
+  async removeBulk(
+    @Query('sessionId') sessionId: string,
+    @Body() ids: string[],
+  ) {
+    return this.elementsService.removeBulk(+sessionId, ids);
   }
 }
