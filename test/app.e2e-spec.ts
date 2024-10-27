@@ -78,4 +78,31 @@ describe('AppController (e2e)', () => {
       .send(['123', '456'])
       .expect(200);
   });
+
+  it('saves a snapshot of the session', async () => {
+    await request(app.getHttpServer())
+      .post(`/sessions/${sessionId}/save`)
+      .expect(201);
+  });
+
+  it('throws an error if add elements to a sessions that has been saved', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/elements')
+      .query({ sessionId })
+      .send([
+        {
+          applicationId: '123',
+          properties: { name: 'Room A', area: 10 },
+          type: 'room',
+        },
+        {
+          applicationId: '456',
+          properties: { name: 'Room B', area: 20 },
+          type: 'room',
+        },
+      ])
+      .expect(400);
+
+    expect(response.body.message).toBe('Session is closed');
+  });
 });
