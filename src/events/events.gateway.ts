@@ -17,7 +17,7 @@ export class EventsGateway {
   @WebSocketServer()
   private readonly server: Server;
 
-  participants: number[] = [];
+  participants: Set<number> = new Set();
 
   @SubscribeMessage('events')
   handleEvent(
@@ -38,15 +38,15 @@ export class EventsGateway {
     // logger connection parameters
     const userId = parseInt(client.handshake.query.userId as string);
     this.logger.debug(`user joined: ${userId}`);
-    this.participants.push(userId);
-    this.server.emit('participants', this.participants);
+    this.participants.add(userId);
+    this.server.emit('participants', Array.from(this.participants));
   }
 
   handleDisconnect(client: Socket) {
     const userId = parseInt(client.handshake.query.userId as string);
     this.logger.debug(`users left: ${userId}`);
-    this.participants = this.participants.filter((id) => id !== userId);
-    this.server.emit('participants', this.participants);
+    this.participants.delete(userId);
+    this.server.emit('participants', Array.from(this.participants));
   }
 
   handleElementsEvent(data: any) {
