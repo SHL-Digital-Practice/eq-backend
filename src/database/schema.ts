@@ -56,3 +56,10 @@ export const users = pgTable('users', {
 export const userRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
 }));
+
+export const targets = pgTable('targets', {
+  id: serial('id').primaryKey(),
+  data: json('data').$type<Record<string, number>>().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
