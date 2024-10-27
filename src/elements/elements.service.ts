@@ -6,11 +6,14 @@ import { elements } from '../database/schema';
 import { and, eq, inArray } from 'drizzle-orm';
 import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 import { SessionsService } from '../sessions/sessions.service';
+import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ElementsService {
   constructor(
     @Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>,
+
+    private readonly eventsGateway: EventsGateway,
     private readonly sessionsService: SessionsService,
   ) {}
   async create(sessionId: number, data: CreateElementDto[]) {
@@ -26,6 +29,8 @@ export class ElementsService {
       properties: d.properties,
       type: d.type,
     }));
+
+    this.eventsGateway.handleElementsEvent('elements created');
     return await this.db.insert(elements).values(dataMapped);
   }
 
@@ -60,6 +65,8 @@ export class ElementsService {
           ),
         );
     }
+
+    this.eventsGateway.handleElementsEvent('elements updated');
   }
 
   async removeBulk(sessionId: number, ids: string[]) {
@@ -68,8 +75,8 @@ export class ElementsService {
       throw new BadRequestException('Session is closed');
     }
 
-    return await this.db
-      .delete(elements)
-      .where(inArray(elements.applicationId, ids));
+    await this.db.delete(elements).where(inArray(elements.applicationId, ids));
+
+    this.eventsGateway.handleElementsEvent('elements deleted');
   }
 }

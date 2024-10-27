@@ -46,4 +46,9 @@ export class EventsGateway {
     this.participants = this.participants.filter((id) => id !== userId);
     this.server.emit('participants', this.participants);
   }
+
+  handleElementsEvent(data: any) {
+    this.logger.debug(`elements event received: ${JSON.stringify(data)}`);
+    this.server.emit('events', data);
+  }
 }
