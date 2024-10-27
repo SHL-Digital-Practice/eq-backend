@@ -8,7 +8,9 @@ import {
 
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway({
+  cors: { origin: '*' },
+})
 export class EventsGateway {
   private readonly logger = new Logger(EventsGateway.name);
 
