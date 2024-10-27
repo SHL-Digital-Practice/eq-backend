@@ -10,6 +10,31 @@ import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ElementsService {
+  async getLatest(sessionId: number) {
+    const output: {
+      [key: string]: {
+        current: number;
+      };
+    } = {};
+
+    const result = await this.db.query.elements.findMany({
+      where: eq(elements.sessionId, sessionId),
+    });
+
+    for (const element of result) {
+      const properties = element.properties;
+      const department = properties.department;
+      if (!output[department]) {
+        output[department] = {
+          current: 0,
+        };
+      } else {
+        output[department].current++;
+      }
+    }
+
+    return output;
+  }
   constructor(
     @Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>,
 

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ElementsService } from './elements.service';
 import { CreateElementDto } from './dto/create-element.dto';
@@ -14,6 +15,8 @@ import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 
 @Controller('elements')
 export class ElementsController {
+  private readonly logger = new Logger(ElementsController.name);
+
   constructor(private readonly elementsService: ElementsService) {}
 
   @Post()
@@ -24,10 +27,10 @@ export class ElementsController {
     return this.elementsService.create(+sessionId, createElementDto);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.elementsService.findOne(+id);
-  }
+  // @Get(':id')
+  // async findOne(@Param('id') id: string) {
+  //   return this.elementsService.findOne(+id);
+  // }
 
   @Patch()
   async updateBulk(
@@ -43,5 +46,10 @@ export class ElementsController {
     @Body() ids: string[],
   ) {
     return this.elementsService.removeBulk(+sessionId, ids);
+  }
+
+  @Get('latest')
+  async getLatest(@Query('sessionId') sessionId: string) {
+    return this.elementsService.getLatest(+sessionId);
   }
 }
