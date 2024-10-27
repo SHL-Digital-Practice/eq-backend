@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateElementDto } from './dto/create-element.dto';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '../database/schema';
-import { elements } from '../database/schema';
+import { elements, sessions } from '../database/schema';
 import { and, eq, inArray } from 'drizzle-orm';
 import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
 import { SessionsService } from '../sessions/sessions.service';
@@ -10,8 +10,11 @@ import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ElementsService {
+  getLive() {
+    return this.getLatest(2);
+  }
   async getLatest(sessionId: number) {
-    const output: {
+    const data: {
       [key: string]: {
         current: number;
       };
@@ -24,14 +27,43 @@ export class ElementsService {
     for (const element of result) {
       const properties = element.properties;
       const department = properties.department;
-      if (!output[department]) {
-        output[department] = {
+      if (!data[department]) {
+        data[department] = {
           current: 0,
         };
       } else {
-        output[department].current++;
+        data[department].current++;
       }
     }
+
+    const session = await this.db.query.sessions.findFirst({
+      where: eq(sessions.id, sessionId),
+      with: {
+        owner: true,
+      },
+    });
+
+    console.log('session', session);
+
+    const output: {
+      data: {
+        [key: string]: {
+          current: number;
+        };
+      };
+      owner: {
+        id: number;
+        name: string;
+        avatar: string;
+      };
+    } = {
+      data,
+      owner: {
+        id: session!.owner.id!,
+        name: session!.owner.name,
+        avatar: session!.owner.avatar!,
+      },
+    };
 
     return output;
   }

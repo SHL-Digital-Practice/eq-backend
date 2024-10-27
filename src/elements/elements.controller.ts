@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   Query,
   Logger,
@@ -51,5 +50,10 @@ export class ElementsController {
   @Get('latest')
   async getLatest(@Query('sessionId') sessionId: string) {
     return this.elementsService.getLatest(+sessionId);
+  }
+
+  @Get('live')
+  async getLive() {
+    return this.elementsService.getLive();
   }
 }
