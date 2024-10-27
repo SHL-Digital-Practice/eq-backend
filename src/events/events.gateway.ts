@@ -37,6 +37,7 @@ export class EventsGateway {
   handleConnection(client: Socket) {
     // logger connection parameters
     const userId = parseInt(client.handshake.query.userId as string);
+    if (!userId) return;
     this.logger.debug(`user joined: ${userId}`);
     this.participants.add(userId);
     this.server.emit('participants', Array.from(this.participants));
