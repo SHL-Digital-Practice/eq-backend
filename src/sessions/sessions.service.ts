@@ -10,7 +10,7 @@ import * as schema from '../database/schema';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { sessions } from '../database/schema';
 import { UpdateSessionDto } from './dto/update-session.dto';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 // import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
@@ -51,17 +51,9 @@ export class SessionsService {
     return session;
   }
 
-  findAll() {
-    return `This action returns all sessions`;
-  }
-
   update(id: number, updateSessionDto: UpdateSessionDto) {
     console.log('updateSessionDto', updateSessionDto);
     return `This action updates a #${id} session`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} session`;
   }
 
   async isSessionOpen(id: number) {
@@ -82,5 +74,18 @@ export class SessionsService {
     if (session.saved) return false;
 
     return true;
+  }
+
+  async findLatestSavedSession() {
+    const result = await this.db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.saved, true))
+      .orderBy(desc(sessions.createdAt))
+      .limit(1);
+
+    if (result.length === 0) return undefined;
+
+    if (result.length > 0) return result[0];
   }
 }

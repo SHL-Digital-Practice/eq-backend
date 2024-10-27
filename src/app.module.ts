@@ -6,6 +6,7 @@ import { DrizzlePostgresModule } from '@knaadh/nestjs-drizzle-postgres';
 import * as schema from './database/schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SessionsModule } from './sessions/sessions.module';
+import { EventsGateway } from './events/events.gateway';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { SessionsModule } from './sessions/sessions.module';
     SessionsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventsGateway],
 })
 export class AppModule {}
