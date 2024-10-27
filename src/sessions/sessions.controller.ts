@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Query } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 
@@ -14,5 +14,10 @@ export class SessionsController {
   @Post(':id/save')
   async save(@Param('id') id: string) {
     return this.sessionsService.saveSession(+id);
+  }
+
+  @Get('elements')
+  async getElements(@Query('sessionId') sessionId: string) {
+    return this.sessionsService.getSessionElements(+sessionId);
   }
 }

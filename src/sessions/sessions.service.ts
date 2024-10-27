@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  forwardRef,
   Inject,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { sessions } from '../database/schema';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { desc, eq } from 'drizzle-orm';
+import { ElementsService } from 'src/elements/elements.service';
 // import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
@@ -87,5 +89,11 @@ export class SessionsService {
     if (result.length === 0) return undefined;
 
     if (result.length > 0) return result[0];
+  }
+
+  async getSessionElements(sessionId: number) {
+    return await this.db.query.elements.findMany({
+      where: eq(sessions.id, sessionId),
+    });
   }
 }
