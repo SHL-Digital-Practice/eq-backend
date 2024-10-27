@@ -7,11 +7,12 @@ import * as schema from './database/schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SessionsModule } from './sessions/sessions.module';
 import { EventsModule } from './events/events.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
     ElementsModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     DrizzlePostgresModule.registerAsync({
       tag: 'DB_EQ',
       useFactory(configService: ConfigService) {
@@ -27,6 +28,7 @@ import { EventsModule } from './events/events.module';
     }),
     SessionsModule,
     EventsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

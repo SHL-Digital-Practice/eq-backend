@@ -12,6 +12,7 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from './database/schema';
 import { eq } from 'drizzle-orm';
 import { EventsGateway } from './events/events.gateway';
+import { NotificationsService } from './notifications/notifications.service';
 
 @Controller()
 export class AppController {
@@ -20,6 +21,8 @@ export class AppController {
     @Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>,
 
     private readonly eventsGateway: EventsGateway,
+
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   @Get()
@@ -51,5 +54,10 @@ export class AppController {
 
     this.eventsGateway.handleElementsEvent('targets updated');
     return 'ok';
+  }
+
+  @Get('notifications')
+  async getNotifications() {
+    return this.notificationsService.getRecentNotifications();
   }
 }

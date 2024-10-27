@@ -87,8 +87,10 @@ export class ElementsService {
       type: d.type,
     }));
 
-    this.eventsGateway.handleElementsEvent('elements created');
-    return await this.db.insert(elements).values(dataMapped);
+    const query = this.db.insert(elements).values(dataMapped);
+    const sqlText = query.toSQL().sql;
+    this.eventsGateway.handleElementsEvent('elements created', sqlText);
+    return await query;
   }
 
   findAll() {
@@ -107,12 +109,13 @@ export class ElementsService {
 
     // risky business
     console.log('sessionId', sessionId);
+    let textContent = '';
     for (const input of inputs) {
       if (!input.applicationId) {
         throw new BadRequestException('applicationId is required');
       }
 
-      await this.db
+      const query = this.db
         .update(elements)
         .set(input)
         .where(
@@ -121,9 +124,13 @@ export class ElementsService {
             eq(elements.applicationId, input.applicationId),
           ),
         );
+
+      const sqlText = query.toSQL().sql;
+      textContent += sqlText;
+      await query;
     }
 
-    this.eventsGateway.handleElementsEvent('elements updated');
+    this.eventsGateway.handleElementsEvent('elements updated', textContent);
   }
 
   async removeBulk(sessionId: number, ids: string[]) {
@@ -132,8 +139,12 @@ export class ElementsService {
       throw new BadRequestException('Session is closed');
     }
 
-    await this.db.delete(elements).where(inArray(elements.applicationId, ids));
+    const query = this.db
+      .delete(elements)
+      .where(inArray(elements.applicationId, ids));
 
-    this.eventsGateway.handleElementsEvent('elements deleted');
+    const sqlText = query.toSQL().sql;
+    await query;
+    this.eventsGateway.handleElementsEvent('elements deleted', sqlText);
   }
 }

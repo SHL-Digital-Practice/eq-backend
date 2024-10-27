@@ -7,12 +7,15 @@ import {
 } from '@nestjs/websockets';
 
 import { Server, Socket } from 'socket.io';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
 })
 export class EventsGateway {
   private readonly logger = new Logger(EventsGateway.name);
+
+  constructor(private readonly notificationsService: NotificationsService) {}
 
   @WebSocketServer()
   private readonly server: Server;
@@ -50,8 +53,11 @@ export class EventsGateway {
     this.server.emit('participants', Array.from(this.participants));
   }
 
-  handleElementsEvent(data: any) {
+  handleElementsEvent(data: any, sql?: string) {
     this.logger.debug(`elements event received: ${JSON.stringify(data)}`);
+    if (sql) {
+      this.notificationsService.createNotificationFromSQL(sql);
+    }
     this.server.emit('events', data);
   }
 }
