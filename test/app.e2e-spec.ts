@@ -21,4 +21,61 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
+
+  let sessionId: number;
+  it('creates a session', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/sessions')
+      .send({ ownerId: 1 })
+      .expect(201);
+
+    expect(response.body).toHaveProperty('id');
+    sessionId = response.body.id as number;
+  });
+
+  it('add elements to a session', async () => {
+    await request(app.getHttpServer())
+      .post('/elements')
+      .query({ sessionId })
+      .send([
+        {
+          applicationId: '123',
+          properties: { name: 'Room A', area: 10 },
+          type: 'room',
+        },
+        {
+          applicationId: '456',
+          properties: { name: 'Room B', area: 20 },
+          type: 'room',
+        },
+      ])
+      .expect(201);
+  });
+
+  it('updates elements on a session', async () => {
+    await request(app.getHttpServer())
+      .patch('/elements')
+      .query({ sessionId })
+      .send([
+        {
+          applicationId: '123',
+          properties: { name: 'Room A', area: 15 },
+          type: 'room',
+        },
+        {
+          applicationId: '456',
+          properties: { name: 'Room B', area: 25 },
+          type: 'room',
+        },
+      ])
+      .expect(200);
+  });
+
+  it('removes elements from a session', async () => {
+    await request(app.getHttpServer())
+      .delete('/elements')
+      .query({ sessionId })
+      .send(['123', '456'])
+      .expect(200);
+  });
 });

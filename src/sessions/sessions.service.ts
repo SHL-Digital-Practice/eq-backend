@@ -17,10 +17,12 @@ import { eq } from 'drizzle-orm';
 export class SessionsService {
   constructor(@Inject('DB_EQ') private db: PostgresJsDatabase<typeof schema>) {}
   async create(createSessionDto: CreateSessionDto) {
-    return await this.db.insert(sessions).values(createSessionDto).returning({
-      id: sessions.id,
-      ownerId: sessions.ownerId,
-    });
+    return (
+      await this.db.insert(sessions).values(createSessionDto).returning({
+        id: sessions.id,
+        ownerId: sessions.ownerId,
+      })
+    )[0];
   }
 
   async saveSession(id: number) {

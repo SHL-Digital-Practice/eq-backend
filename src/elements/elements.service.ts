@@ -5,7 +5,7 @@ import * as schema from '../database/schema';
 import { elements } from '../database/schema';
 import { and, eq, inArray } from 'drizzle-orm';
 import { UpdateElementBulkDto } from './dto/update-element-bulk.dto';
-import { SessionsService } from 'src/sessions/sessions.service';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Injectable()
 export class ElementsService {
